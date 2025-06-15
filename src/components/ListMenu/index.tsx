@@ -12,7 +12,6 @@ import { useLocation } from 'react-router-dom'
 
 function ListMenu() {
   const {pathname} = useLocation()
-  console.log(location.pathname)
   return (
     <div className={style.container}>
       <h1 className={style.h1}>OS Manager</h1>

@@ -1,9 +1,12 @@
+import axios from "axios"
 import React from "react"
+import { usuarioAuthentication } from "../../utils/userIsAuth"
 
 function FormLogin() {
   const [signUp, setSignUp] = React.useState(false)
 
-  const handlePriventDefault = (e: React.FormEvent<HTMLFormElement>) => {
+
+  const handleSubmit  = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     
     const formElements = e.currentTarget.elements as typeof e.currentTarget.elements & {
@@ -16,13 +19,23 @@ function FormLogin() {
       {
         name: formElements.nome!.value,
         email: formElements.email.value,
-        password: formElements.senha.value,
-        passwordConf: formElements.confSenha!.value,
+        senha: formElements.senha.value,
+        confSenha: formElements.confSenha!.value,
       } :
       {
         
         email: formElements.email.value,
-        password: formElements.senha.value,
+        senha: formElements.senha.value,
+      }
+
+      try {
+        const data = signUp ?
+        await axios.post("http://localhost:3333/usuario", loginData)
+        :
+        await usuarioAuthentication(loginData)
+        console.log(data)
+      } catch (err) {
+        console.error("Erro ao efetuar login/signUp", err)
       }
     return loginData
   }
@@ -31,7 +44,7 @@ function FormLogin() {
     <div className="w-[440px] text-sm mt-6">
       <h1 className="text-3xl font-black mb-2">{signUp ? 'Crie sua conta' : 'Entre na sua conta'}</h1>
       <p className="mb-8">Ou <span onClick={() => setSignUp(!signUp)} className="font-semibold cursor-pointer">{signUp ? 'faça login' : 'crie uma nova conta'}</span></p>
-      <form onSubmit={handlePriventDefault} className="flex flex-col gap-2 text-left">
+      <form onSubmit={handleSubmit } className="flex flex-col gap-2 text-left">
       {signUp && 
       <>  
         <label htmlFor="nome" className="font-semibold">Nome</label>
