@@ -3,23 +3,16 @@ import useOrdemStore from "../../stores/useOrdemStore";
 
 function DropdownInputs() {
   const {
-    descricao,
-    status,
-    clienteId,
-    produtos,
-    servicos,
-    setDescricao,
     setStatus,
     setClienteId,
-    adicionarProduto,
-    adicionarServico,
+
   } = useOrdemStore();
-  const [clientes, setClientes] = useState([
+  const [clientes, ] = useState([
     { id: 1, nome: "Rodrigo" },
     { id: 2, nome: "Luana" },
     { id: 3, nome: "Pedro" },
   ]);
-  const [showStatus, setShowStatus] = useState([
+  const [showStatus, ] = useState([
     { id: 1, status: "PENDENTE", label:'Aberta'},
     { id: 2, status: "EM_ANDAMENTO", label: 'Em Andamento' },
     { id: 3, status: "CONCLUIDA", label: 'Concluída' },
@@ -27,18 +20,18 @@ function DropdownInputs() {
   ]);
   const [clienteSelected, setClienteSelected] = useState("");
   const [statusSelected, setStatusSelected] = useState("");
-  const handleChangeCliente = (e) => {
-    setClienteSelected(e.target.key);
+  const handleChangeCliente = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setClienteSelected(e.target.value);
   };
-  const handleChangeStatus = (e) => {
+  const handleChangeStatus = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setStatusSelected(e.target.value);
   };
   useEffect(() => {
     setClienteId(clienteSelected)
-  }, [clienteSelected])
+  }, [setClienteId, clienteSelected])
   useEffect(() => {
     setStatus(statusSelected)
-  }, [statusSelected])
+  }, [setStatus, statusSelected])
   return (
     <div className="flex justify-between">
       <div>

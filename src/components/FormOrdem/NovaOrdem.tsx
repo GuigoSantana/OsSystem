@@ -27,7 +27,7 @@ function NovaOrdem({ setIsCreate }: novaOrdemType) {
     await axios.post("http://localhost:3333/ordem", ordem);
   };
   const [ordens, setOrdens] = useState([]);
-
+  console.log(ordens)
   useEffect(() => {
     const getOrdem = async () => {
       const ordens = await axios.get("http://localhost:3333/ordem");

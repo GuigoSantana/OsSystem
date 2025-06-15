@@ -1,6 +1,6 @@
-import { DateRange, Range } from 'react-date-range';
-import 'react-date-range/dist/styles.css'; // main css file
-import 'react-date-range/dist/theme/default.css'; // theme css file
+import { DateRange, Range, RangeKeyDict } from 'react-date-range';
+import 'react-date-range/dist/styles.css'; 
+import 'react-date-range/dist/theme/default.css'; 
 type stateType = {
   state: Range[]
   setState: React.Dispatch<React.SetStateAction<Range[]>>
@@ -8,7 +8,7 @@ type stateType = {
 
 function Calendario({state, setState}: stateType) {
 
-  function handleOnChange(item:any) {
+  function handleOnChange(item:  RangeKeyDict) {
     console.log(item.selection.startDate)
     setState([item.selection])
   }
