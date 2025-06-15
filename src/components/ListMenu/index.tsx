@@ -7,6 +7,7 @@ import ProdutosSvg from '../../assets/MenuSvgs/ProdutosSvg'
 import SaidaSvg from '../../assets/MenuSvgs/SaidaSvg'
 import SairSvg from '../../assets/MenuSvgs/SairSvg'
 import ServicosSvg from '../../assets/MenuSvgs/ServicosSvg'
+import ItemMenu from './itemMenu'
 import style from './styles'
 import { useLocation } from 'react-router-dom'
 
@@ -17,30 +18,24 @@ function ListMenu() {
       <h1 className={style.h1}>OS Manager</h1>
       <nav className={style.nav}>
         <ul className={style.ul}>
-          <li className={`${style.li} ${pathname === '/' ? style.liFocus : ''}`}>
+          <ItemMenu path='/' label='Dashboard'>
             <DashboardSvg />
-            <a className='select-none w-full' href='/'>Dashboard</a>
-          </li>
-          <li className={`${style.li} ${pathname === '/clientes' ? style.liFocus : ''}`}>
+          </ItemMenu>
+          <ItemMenu path='/clientes' label='Clientes'>
             <ClientesSvg />
-            <a className='select-none w-full' href='/clientes'>Clientes</a>
-          </li>
-          <li className={`${style.li} ${pathname === '/produtos' ? style.liFocus : ''}`}>
+          </ItemMenu>
+          <ItemMenu path='/produtos' label='Produtos'>
             <ProdutosSvg />
-            <a className='select-none w-full' href='/produtos'>Produtos</a>
-          </li>
-          <li className={`${style.li} ${pathname === '/servicos' ? style.liFocus : ''}`}>
+          </ItemMenu>
+          <ItemMenu path='/servicos' label='Serviços'>
             <ServicosSvg />
-            <a className='select-none w-full' href='/servicos'>Serviços</a>
-            </li>
-          <li className={`${style.li} ${pathname === '/ordens' ? style.liFocus : ''}`}>
+          </ItemMenu>
+          <ItemMenu path='/ordens' label='Ordens'>
             <OrdensSvg />
-            <a className='select-none w-full' href='/ordens'>Ordens de Serviço</a>
-          </li>
-          <li className={`${style.li} ${pathname === '/financeiro' ? style.liFocus : ''}`}>
+          </ItemMenu>
+          <ItemMenu path='/financeiro' label='financeiro'>
             <FinanceiroSvg />
-            <a className='select-none w-full' href='/financeiro'>Financeiro</a>
-            </li>
+          </ItemMenu>
           <li id='finaceiros' className={`${style.liFinance} ${style.li} ${pathname === '/entradas' ? style.liFinanceFocus.entrada : ''}`}>
             <EntradaSvg />
             <a className='select-none w-full' href='/entrada'>Nova Entrada</a>
