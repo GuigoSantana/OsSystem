@@ -15,23 +15,23 @@ Para executar o projeto localmente na sua máquina, siga os passos abaixo:
 
 1. Clone o repositório
    
-git clone https://github.com/GuigoSantana/OsSystem.git
+   git clone https://github.com/GuigoSantana/OsSystem.git
 
-cd OsSystem
+   cd OsSystem
 
-3. Instale as dependências
+2. Instale as dependências
 
-Certifique-se de que você tenha o Node.js instalado (versão 16 ou superior recomendada).
+   Certifique-se de que você tenha o Node.js instalado (versão 16 ou superior recomendada).
 
-npm install
+   npm install
 
-4. Inicie o servidor de desenvolvimento
+3. Inicie o servidor de desenvolvimento
 
-npm run dev
+   npm run dev
 
-Após isso, o Vite abrirá um servidor local. Acesse no navegador:
+   Após isso, o Vite abrirá um servidor local. Acesse no navegador:
 
-http://localhost:5173
+   http://localhost:5173
 
 🧰 Tecnologias Utilizadas
 React + Vite
