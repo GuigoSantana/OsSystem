@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import axios from 'axios'
+
 export type ClienteType = {
   createAt: string;
   nome: string;
@@ -16,17 +17,17 @@ type ClienteStoreType = {
   setTelefone: (telefone: string) => void;
   setEndereco: (endereco: string) => void;
   setClientes: (clientes: ClienteType[]) => void;
-  getClientes: () => Promise<void>;
+  getClientes: (token:string) => Promise<void>;
 };
 
 const useClienteStore = create<ClienteStoreType & ClienteType>((set) => ({
-  clientes: [],
+  createAt: "",
   nome: "",
   email: "",
   cpf: "",
   telefone: "",
   endereco: "",
-  createAt: "",
+  clientes: [],
   setNome: (nome: string) => set({ nome }),
   setEmail: (email: string) => set({ email }),
   setCpf: (cpf: string) => set({ cpf }),
@@ -35,9 +36,13 @@ const useClienteStore = create<ClienteStoreType & ClienteType>((set) => ({
   setClientes: (clientes: ClienteType[]) => set((state) => ({
     clientes: [...state.clientes, ...clientes]
   })),
-  getClientes: async () => {
+  getClientes: async (token: string) => {
     try {
-      const resposta = await axios.get<ClienteType[]>('http://localhost:3333/clientes')
+      const resposta = await axios.get<ClienteType[]>('http://localhost:3333/clientes', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
       set({clientes: resposta.data})
     } catch (err) {
       console.error('Erro ao carregar clientes', err)

@@ -1,7 +1,8 @@
 import { create } from "zustand";
 import { ClienteType } from "./useClienteStore";
+import axios from "axios";
 
-type ordemType = {
+type OrdemType = {
   cliente: ClienteType;
   createAt: string;
   descricao: string;
@@ -11,19 +12,20 @@ type ordemType = {
   servicos: { servicoId: string }[];
 }
 
-interface OrdemState {
+type OrdemState = {
   descricao: string;
   status: string;
   clienteId: string;
   produtos: { produtoId: string }[];
   servicos: { servicoId: string }[];
-  ordens: ordemType[];
+  ordens: OrdemType[];
   setDescricao: (descricao: string) => void;
   setStatus: (status: string) => void;
   setClienteId: (clienteId: string) => void;
   adicionarProduto: (produto: { produtoId: string }) => void;
   adicionarServico: (servico: { servicoId: string }) => void;
-  getOrdens: (ordens: ordemType[]) => void;
+  setOrdens: (ordens: OrdemType[]) => void;
+  getOrdens: () => Promise<void> 
 }
 
 const useOrdemStore = create<OrdemState>((set) => ({
@@ -33,10 +35,22 @@ const useOrdemStore = create<OrdemState>((set) => ({
   produtos: [],
   servicos: [],
   ordens: [],
-  getOrdens: (ordens: ordemType[]) => set((state) => ({
+  setOrdens: (ordens: OrdemType[]) => set((state) => ({
     ordens: [...state.ordens, ...ordens]
   })),
-
+  getOrdens: async () => {
+    const token = localStorage.getItem('token')
+    try {
+      const resposta = await axios.get<OrdemType[]>('http://localhost:3333/ordem', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      set({ordens: resposta.data})
+    } catch (err) {
+      console.error('Erro ao carregar clientes', err)
+    }
+  },
   setDescricao: (descricao: string) => set({ descricao }),
   setStatus: (status: string) => set({ status }),
   setClienteId: (clienteId: string) => set({ clienteId }),

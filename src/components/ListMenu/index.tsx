@@ -7,12 +7,16 @@ import ProdutosSvg from '../../assets/MenuSvgs/ProdutosSvg'
 import SaidaSvg from '../../assets/MenuSvgs/SaidaSvg'
 import SairSvg from '../../assets/MenuSvgs/SairSvg'
 import ServicosSvg from '../../assets/MenuSvgs/ServicosSvg'
+import useAuthStore from '../../stores/useAuthStore'
 import ItemMenu from './itemMenu'
 import style from './styles'
 import { useLocation } from 'react-router-dom'
 
 function ListMenu() {
   const {pathname} = useLocation()
+
+  const {setLogoutUser} = useAuthStore()
+
   return (
     <div className={style.container}>
       <h1 className={style.h1}>OS Manager</h1>
@@ -45,7 +49,7 @@ function ListMenu() {
             <a className='select-none w-full' href='/saida'>Nova Saída</a>
           </li>
         </ul>
-        <button className={style.button}>
+        <button className={style.button} onClick={() => setLogoutUser()}>
           <SairSvg />
           <p>Sair</p>
         </button>
