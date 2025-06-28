@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import axios from 'axios'
+import { apiUrl } from "../utils/variableUrl";
 
 export type ClienteType = {
   createAt: string;
@@ -38,7 +39,7 @@ const useClienteStore = create<ClienteStoreType & ClienteType>((set) => ({
   })),
   getClientes: async (token: string) => {
     try {
-      const resposta = await axios.get<ClienteType[]>('http://localhost:3333/clientes', {
+      const resposta = await axios.get<ClienteType[]>(`${apiUrl}/clientes`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { ClienteType } from "./useClienteStore";
 import axios from "axios";
+import { apiUrl } from "../utils/variableUrl";
 
 type OrdemType = {
   cliente: ClienteType;
@@ -41,7 +42,7 @@ const useOrdemStore = create<OrdemState>((set) => ({
   getOrdens: async () => {
     const token = localStorage.getItem('token')
     try {
-      const resposta = await axios.get<OrdemType[]>('http://localhost:3333/ordem', {
+      const resposta = await axios.get<OrdemType[]>(`${apiUrl}/ordem`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

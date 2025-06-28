@@ -1,5 +1,6 @@
 import axios from "axios";
 import { create } from "zustand";
+import { apiUrl } from "../utils/variableUrl";
 
 export type ProdutoType = {
   title: string;
@@ -33,7 +34,7 @@ const useProdutoStore = create<ProdutoStoreType & ProdutoType>((set) => ({
   setEstoque: (estoque: string) => set({ estoque }),
   getProdutos: async () =>{
     try {
-      const resposta = await axios.get<ProdutoType[]>('http://localhost:3333/produtos')
+      const resposta = await axios.get<ProdutoType[]>(`${apiUrl}/produtos`)
       set({produtos: resposta.data})
     } catch (err) {
       return console.log(err)

@@ -2,6 +2,8 @@ import axios from "axios";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { jwtDecode } from "jwt-decode";
+import { apiUrl } from "../utils/variableUrl";
+
 
 type LoginType = {
   email: string;
@@ -37,14 +39,14 @@ const useAuthStore = create<AuthStoreType>()(
       setToken: (token: string) => set({ token }),
       getAuthentication: async (data: LoginType) => {
         const { data: res } = await axios.post(
-          "http://localhost:3333/usuario/login",
+          `${apiUrl}/usuario/login`,
           data
         );
         set({ token: res.token });
       },
       getCreationAndAuthentication: async (data: CreateType) => {
         const { data: res } = await axios.post(
-          "http://localhost:3333/usuario",
+          `${apiUrl}/usuario`,
           data
         );
         set({ token: res.token });
