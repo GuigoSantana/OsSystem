@@ -1,4 +1,4 @@
-import FormProduto from "../../components/FormProduto"
+import FormProduto from "../../components/ProdutoContainer"
 import ListMenu from "../../components/ListMenu"
 
 function Produtos() {

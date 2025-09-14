@@ -1,5 +1,5 @@
 import ListMenu from '../../components/ListMenu'
-import FormOrdem from '../../components/FormOrdem'
+import FormOrdem from '../../components/OrdemContainer'
 
 function Ordens() {
   return (

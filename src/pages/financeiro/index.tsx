@@ -1,4 +1,4 @@
-import FormFinanceiro from "../../components/FormFinanceiro";
+import FormFinanceiro from "../../components/FinanceiroContainer";
 import ListMenu from "../../components/ListMenu";
 
 function Finaceiro() {

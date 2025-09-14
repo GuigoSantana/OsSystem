@@ -1,5 +1,5 @@
 import ListMenu from '../../components/ListMenu'
-import FormCliente from '../../components/FormCliente'
+import FormCliente from '../../components/ClienteContainer'
 
 function Clientes() {
   return (

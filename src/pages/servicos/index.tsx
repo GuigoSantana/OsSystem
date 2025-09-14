@@ -1,4 +1,4 @@
-import FormServico from "../../components/FormServico"
+import FormServico from "../../components/ServicoContainer"
 import ListMenu from "../../components/ListMenu"
 
 function Servicos() {
