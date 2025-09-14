@@ -9,6 +9,7 @@ export type ClienteType = {
   cpf: string;
   telefone: string;
   endereco: string;
+  usuarioId: string;
 }
 type ClienteStoreType = {
   clientes: ClienteType[];
@@ -18,7 +19,7 @@ type ClienteStoreType = {
   setTelefone: (telefone: string) => void;
   setEndereco: (endereco: string) => void;
   setClientes: (clientes: ClienteType[]) => void;
-  getClientes: (token:string) => Promise<void>;
+  getClientes: (token:string, usuarioId: string) => Promise<void>;
 };
 
 const useClienteStore = create<ClienteStoreType & ClienteType>((set) => ({
@@ -28,6 +29,7 @@ const useClienteStore = create<ClienteStoreType & ClienteType>((set) => ({
   cpf: "",
   telefone: "",
   endereco: "",
+  usuarioId: "",
   clientes: [],
   setNome: (nome: string) => set({ nome }),
   setEmail: (email: string) => set({ email }),
@@ -37,9 +39,9 @@ const useClienteStore = create<ClienteStoreType & ClienteType>((set) => ({
   setClientes: (clientes: ClienteType[]) => set((state) => ({
     clientes: [...state.clientes, ...clientes]
   })),
-  getClientes: async (token: string) => {
+  getClientes: async (token: string, usuarioId: string) => {
     try {
-      const resposta = await axios.get<ClienteType[]>(`${apiUrl}/clientes`, {
+      const resposta = await axios.get<ClienteType[]>(`${apiUrl}/clientes/${usuarioId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

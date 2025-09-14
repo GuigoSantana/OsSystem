@@ -4,7 +4,6 @@ import { persist } from "zustand/middleware";
 import { jwtDecode } from "jwt-decode";
 import { apiUrl } from "../utils/variableUrl";
 
-
 type LoginType = {
   email: string;
   senha: string;
@@ -24,34 +23,38 @@ type CreateType = {
 
 type AuthStoreType = {
   token: string;
+  usuarioId: string;
   setToken: (token: string) => void;
   getAuthentication: (data: LoginType) => Promise<void>;
   getCreationAndAuthentication: (data: CreateType) => Promise<void>;
-  getCheckIfTheTokenIsValid: (token: string, logoutUserCallBack: () => void) => Promise<void>;
+  getCheckIfTheTokenIsValid: (
+    token: string,
+    logoutUserCallBack: () => void
+  ) => Promise<void>;
   setLogoutUser: () => void;
 };
-
 
 const useAuthStore = create<AuthStoreType>()(
   persist(
     (set) => ({
       token: "",
+      usuarioId: "",
       setToken: (token: string) => set({ token }),
       getAuthentication: async (data: LoginType) => {
-        const { data: res } = await axios.post(
-          `${apiUrl}/usuario/login`,
-          data
-        );
+        const { data: res } = await axios.post(`${apiUrl}/usuario/login`, data);
+        console.log(res)
         set({ token: res.token });
+        set({ usuarioId: res.usuarioId });
       },
       getCreationAndAuthentication: async (data: CreateType) => {
-        const { data: res } = await axios.post(
-          `${apiUrl}/usuario`,
-          data
-        );
+        const { data: res } = await axios.post(`${apiUrl}/usuario`, data);
         set({ token: res.token });
+        set({ usuarioId: res.usuarioId });
       },
-      getCheckIfTheTokenIsValid: async (token: string, logoutUserCallBack: () => void) => {
+      getCheckIfTheTokenIsValid: async (
+        token: string,
+        logoutUserCallBack: () => void
+      ) => {
         try {
           const decoded = jwtDecode<TokenPayload>(token);
           const now = Date.now();
@@ -59,19 +62,19 @@ const useAuthStore = create<AuthStoreType>()(
           const delay = expiration - now;
           console.log(decoded.exp * 1000 - now);
           if (delay <= 0) {
-              logoutUserCallBack()
+            logoutUserCallBack();
           } else {
-            setTimeout(()=> {
-              logoutUserCallBack()
-            }, delay)
+            setTimeout(() => {
+              logoutUserCallBack();
+            }, delay);
           }
         } catch (err) {
-          console.log("Erro ao decodificar token", err)
-          logoutUserCallBack()
+          console.log("Erro ao decodificar token", err);
+          logoutUserCallBack();
         }
       },
       setLogoutUser: () => {
-        set({ token: "" });
+        set({ token: "", usuarioId: "" });
       },
     }),
     {

@@ -9,9 +9,11 @@ import App from "./App";
 import Clientes from "./pages/clientes";
 import Ordens from "./pages/ordens";
 import Login from "./pages/login";
-import Protudos from "./pages/produtos";
+import Produtos from "./pages/produtos";
 import NoPage from "./pages/notfound";
 import useAuthStore from "./stores/useAuthStore";
+import Servicos from "./pages/servicos";
+import Finaceiro from "./pages/financeiro";
 
 function PrivateRoute({ isAuthenticated }: { isAuthenticated: boolean }) {
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
@@ -27,7 +29,9 @@ function AppRoutes() {
         <Route element={<PrivateRoute isAuthenticated={isAuthenticated} />}>
           <Route path="/" element={<App />} />
           <Route path="/clientes" element={<Clientes />} />
-          <Route path="/produtos" element={<Protudos />} />
+          <Route path="/produtos" element={<Produtos />} />
+          <Route path="/servicos" element={<Servicos />} />
+          <Route path="/financeiro" element={<Finaceiro />} />
           <Route path="/ordens" element={<Ordens />} />
         </Route>
           <Route path="*" element={<NoPage />} />
