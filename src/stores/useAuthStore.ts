@@ -1,32 +1,16 @@
-import axios from "axios";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { jwtDecode } from "jwt-decode";
-import { apiUrl } from "../utils/variableUrl";
-
-type LoginType = {
-  email: string;
-  senha: string;
-};
-
-type TokenPayload = {
-  exp: number;
-};
-
-type CreateType = {
-  nome?: string;
-  email: string;
-  cpf?: string;
-  telefone?: string;
-  senha: string;
-};
+import { authServices } from "../services/authServices";
+import { CreateUserType, LoginUserType, TokenPayload } from "../types/authTypes";
 
 type AuthStoreType = {
   token: string;
   usuarioId: string;
+  isLoading: boolean;
   setToken: (token: string) => void;
-  getAuthentication: (data: LoginType) => Promise<void>;
-  getCreationAndAuthentication: (data: CreateType) => Promise<void>;
+  getAuthentication: (data: LoginUserType) => Promise<void>;
+  getCreation: (data: CreateUserType) => Promise<void>;
   getCheckIfTheTokenIsValid: (
     token: string,
     logoutUserCallBack: () => void
@@ -34,22 +18,39 @@ type AuthStoreType = {
   setLogoutUser: () => void;
 };
 
+const getTokenInLocalStorage = localStorage.getItem("auth-storage")
+const tokenStorage = getTokenInLocalStorage ? JSON.parse(getTokenInLocalStorage).state.token : "";
+
 const useAuthStore = create<AuthStoreType>()(
   persist(
     (set) => ({
-      token: "",
+      token: tokenStorage,
       usuarioId: "",
+      isLoading: false,
       setToken: (token: string) => set({ token }),
-      getAuthentication: async (data: LoginType) => {
-        const { data: res } = await axios.post(`${apiUrl}/usuario/login`, data);
-        console.log(res)
-        set({ token: res.token });
-        set({ usuarioId: res.usuarioId });
+      getAuthentication: async (data: LoginUserType) => {
+        set({ isLoading: true });
+        try {
+          const res = await authServices.Authentication(data);
+          set({ token: res.token });
+          set({ usuarioId: res.usuarioId });
+        } catch (error) {
+          console.log(error);
+        } finally {
+          set({ isLoading: false });
+        }
       },
-      getCreationAndAuthentication: async (data: CreateType) => {
-        const { data: res } = await axios.post(`${apiUrl}/usuario`, data);
-        set({ token: res.token });
-        set({ usuarioId: res.usuarioId });
+      getCreation: async (data: CreateUserType) => {
+        set({ isLoading: true });
+        try {
+          const res = await authServices.Creation(data);
+          set({ token: res.token });
+          set({ usuarioId: res.usuarioId });
+        } catch (error) {
+          console.log(error);
+        } finally {
+          set({ isLoading: false });
+        }
       },
       getCheckIfTheTokenIsValid: async (
         token: string,

@@ -5,11 +5,14 @@ import ServicosSvg from "../../assets/DashboardSvgs/ServicosSvg";
 import OrdensSvg from "../../assets/DashboardSvgs/OrdensSvg";
 import style from "./styles";
 import Calendario from "./Calendario";
-import React from "react";
+import React, { useEffect } from "react";
 import CalendarioSvg from "../../assets/DashboardSvgs/CalendarioSvg";
 import { Range } from "react-date-range";
 import Valores from "./Valores";
+import useAuthStore from "../../stores/useAuthStore";
 function Dashboard() {
+  const {getCheckIfTheTokenIsValid, token, setLogoutUser} = useAuthStore()
+
   const [toggleCalendar, setToggleCalendar] = React.useState(false);
   const [stateCalendar, setStateCalendar] = React.useState<Range[]>([
     {
@@ -18,6 +21,7 @@ function Dashboard() {
       key: "selection",
     },
   ]);
+  
   const options: Intl.DateTimeFormatOptions = {
     day: "2-digit",
     month: "2-digit",
@@ -29,6 +33,14 @@ function Dashboard() {
   const formatedStartDate = formatter.format(stateCalendar[0].startDate);
   const formatedEndDate = formatter.format(stateCalendar[0].endDate);
 
+
+  useEffect(() => {
+    getCheckIfTheTokenIsValid(token, setLogoutUser)
+    return () => {
+      
+    }
+  }, [getCheckIfTheTokenIsValid, token, setLogoutUser])
+ 
   return (
     <div className="w-full flex justify-center">
       <div className="w-full xl:w-[80%]  px-8 py-8 flex flex-col ">

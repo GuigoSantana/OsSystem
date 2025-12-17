@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import useOrdemStore from "../../stores/useOrdemStore";
+import useClienteStore from "../../stores/useClienteStore";
 
 function DropdownInputs() {
   const {
@@ -14,41 +15,44 @@ function DropdownInputs() {
     adicionarProduto,
     adicionarServico,
   } = useOrdemStore();
-  const [clientes, setClientes] = useState([
-    { id: 1, nome: "Rodrigo" },
-    { id: 2, nome: "Luana" },
-    { id: 3, nome: "Pedro" },
-  ]);
+
+  const { clientes } = useClienteStore();
+
   const [showStatus, setShowStatus] = useState([
-    { id: 1, status: "PENDENTE", label:'Aberta'},
-    { id: 2, status: "EM_ANDAMENTO", label: 'Em Andamento' },
-    { id: 3, status: "CONCLUIDA", label: 'Concluída' },
-    { id: 4, status: "CANCELADA", label: 'Cancelada' },
+    { id: 1, status: "PENDENTE", label: "Aberta" },
+    { id: 2, status: "EM_ANDAMENTO", label: "Em Andamento" },
+    { id: 3, status: "CONCLUIDA", label: "Concluída" },
+    { id: 4, status: "CANCELADA", label: "Cancelada" },
   ]);
+
   const [clienteSelected, setClienteSelected] = useState("");
   const [statusSelected, setStatusSelected] = useState("");
+
   const handleChangeCliente = (e) => {
     setClienteSelected(e.target.key);
   };
+
   const handleChangeStatus = (e) => {
     setStatusSelected(e.target.value);
   };
+
+
   useEffect(() => {
-    setClienteId(clienteSelected)
-  }, [clienteSelected])
-  useEffect(() => {
-    setStatus(statusSelected)
-  }, [statusSelected])
+    setStatus(statusSelected);
+  }, [statusSelected]);
   return (
     <div className="flex justify-between">
       <div>
         <label htmlFor="cliente">Cliente</label>
-        <select value={clienteSelected} onChange={(e) =>handleChangeCliente(e)}>
+        <select
+          value={clienteSelected}
+          onChange={(e) => handleChangeCliente(e)}
+        >
           <option value="" disabled hidden>
             Selecione um cliente
           </option>
           {clientes.map((cliente) => (
-            <option key={cliente.id} value={cliente.id}>
+            <option key={cliente.cpf} value={cliente.nome}>
               {cliente.nome}
             </option>
           ))}

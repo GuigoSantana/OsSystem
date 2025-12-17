@@ -27,7 +27,7 @@ function FormOrdem() {
           <header className="flex flex-wrap justify-between w-full gap-4 px-8 py-8">
             <div>
               <h1 className="text-3xl font-bold">Ordens de Serviço</h1>
-              <p className="text-gray-500">
+              <p className="text-gray-500 mt-2">
                 Gerencie todas as ordens de serviços
               </p>
             </div>

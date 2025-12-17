@@ -17,7 +17,7 @@ type ProdutoStoreType = {
   setPrecoc: (precoc: string) => void;
   setDescricao: (descricao: string) => void;
   setEstoque: (estoque: string) => void;
-  getProdutos: () => Promise<void>;
+  getProdutos: (usuarioId: string, token: string) => Promise<void>;
 };
 
 const useProdutoStore = create<ProdutoStoreType & ProdutoType>((set) => ({
@@ -32,9 +32,13 @@ const useProdutoStore = create<ProdutoStoreType & ProdutoType>((set) => ({
   setPrecoc: (precoc: string) => set({ precoc }),
   setDescricao: (descricao: string) => set({ descricao }),
   setEstoque: (estoque: string) => set({ estoque }),
-  getProdutos: async () =>{
+  getProdutos: async (usuarioId: string, token: string) =>{
     try {
-      const resposta = await axios.get<ProdutoType[]>(`${apiUrl}/produtos`)
+      const resposta = await axios.get<ProdutoType[]>(`${apiUrl}/produtos/${usuarioId}`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            })
       set({produtos: resposta.data})
     } catch (err) {
       return console.log(err)

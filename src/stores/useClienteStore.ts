@@ -1,56 +1,62 @@
 import { create } from "zustand";
-import axios from 'axios'
-import { apiUrl } from "../utils/variableUrl";
+import { persist } from "zustand/middleware";
+import { ClienteFormType, ClienteListType } from "../types/clientesTypes";
+import api from "../services/api";
+import { clientesServices } from "../services/clientesServices";
+import useToastStore from "./useToastStore";
 
-export type ClienteType = {
-  createAt: string;
-  nome: string;
-  email: string;
-  cpf: string;
-  telefone: string;
-  endereco: string;
-  usuarioId: string;
-}
+
 type ClienteStoreType = {
-  clientes: ClienteType[];
-  setNome: (nome: string) => void;
-  setEmail: (email: string) => void;
-  setCpf: (cpf: string) => void;
-  setTelefone: (telefone: string) => void;
-  setEndereco: (endereco: string) => void;
-  setClientes: (clientes: ClienteType[]) => void;
-  getClientes: (token:string, usuarioId: string) => Promise<void>;
+  clientes: ClienteListType[];
+  isLoading: boolean;
+  setClientes: (clientes: ClienteListType[]) => void;
+  getClientes: (usuarioId: string) => Promise<void>;
+  createCliente: (data: ClienteFormType) => Promise<void>;
 };
 
-const useClienteStore = create<ClienteStoreType & ClienteType>((set) => ({
-  createAt: "",
-  nome: "",
-  email: "",
-  cpf: "",
-  telefone: "",
-  endereco: "",
-  usuarioId: "",
-  clientes: [],
-  setNome: (nome: string) => set({ nome }),
-  setEmail: (email: string) => set({ email }),
-  setCpf: (cpf: string) => set({ cpf }),
-  setTelefone: (telefone: string) => set({ telefone }),
-  setEndereco: (endereco: string) => set({ endereco }),
-  setClientes: (clientes: ClienteType[]) => set((state) => ({
-    clientes: [...state.clientes, ...clientes]
-  })),
-  getClientes: async (token: string, usuarioId: string) => {
-    try {
-      const resposta = await axios.get<ClienteType[]>(`${apiUrl}/clientes/${usuarioId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
+const useClienteStore = create<ClienteStoreType>()(
+  persist(
+    (set) => ({
+      clientes: [],
+      isLoading: false,
+
+      setClientes: (clientes: ClienteListType[]) =>
+        set((state) => ({
+          clientes: [...state.clientes, ...clientes],
+        })),
+
+      getClientes: async (usuarioId: string) => {
+        set({ isLoading: true });
+        try {
+          const res = await clientesServices.getClientes(usuarioId)
+          set({ clientes: res.data, isLoading: false });
+        } catch (err) {
+          console.error("Erro ao carregar clientes", err);
+        } finally {
+          set({isLoading: false})
         }
-      })
-      set({clientes: resposta.data})
-    } catch (err) {
-      console.error('Erro ao carregar clientes', err)
+      },
+
+      createCliente: async (data: ClienteFormType) => {
+        set({ isLoading: true });
+        try {
+          const res = await api.post("/clientes", data)
+          console.log(res);
+          set({isLoading: false });
+          useToastStore.getState().addToast("Cliente criado!", "sucesso")
+        } catch (err) {
+          console.log(err);
+          useToastStore.getState().addToast("Cliente não foi criado!", "erro")
+        } finally {
+          set({isLoading: false})
+        }
+      },
+    }),
+    {
+      name: "cliente-storage",
+      partialize: (state) => ({ clientes: state.clientes }),
     }
-  },
-}));
+  )
+);
 
 export default useClienteStore;

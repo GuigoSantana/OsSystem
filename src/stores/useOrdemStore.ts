@@ -1,7 +1,7 @@
 import { create } from "zustand";
-import { ClienteType } from "./useClienteStore";
 import axios from "axios";
 import { apiUrl } from "../utils/variableUrl";
+import { ClienteType } from "../types/clientesTypes";
 
 type OrdemType = {
   cliente: ClienteType;
