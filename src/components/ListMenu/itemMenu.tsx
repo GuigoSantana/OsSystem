@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import style from './styles'
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 type ItemType = {
     children: ReactNode;
@@ -14,7 +14,7 @@ function ItemMenu({children, path, label }: ItemType) {
   return (
     <li className={`${style.li} ${pathname === path ? style.liFocus : ''}`}>
             {children}
-            <a className='select-none w-full' href={path}>{label}</a>
+            <Link className='select-none w-full' to={path}>{label}</Link>
           </li>
   )
 }

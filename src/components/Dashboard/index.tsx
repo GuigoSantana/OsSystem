@@ -11,7 +11,7 @@ import { Range } from "react-date-range";
 import Valores from "./Valores";
 import useAuthStore from "../../stores/useAuthStore";
 function Dashboard() {
-  const {getCheckIfTheTokenIsValid, token, setLogoutUser} = useAuthStore()
+  const {userGetCheckIfTheTokenIsValid, token, setLogoutUser} = useAuthStore()
 
   const [toggleCalendar, setToggleCalendar] = React.useState(false);
   const [stateCalendar, setStateCalendar] = React.useState<Range[]>([
@@ -35,11 +35,11 @@ function Dashboard() {
 
 
   useEffect(() => {
-    getCheckIfTheTokenIsValid(token, setLogoutUser)
+    userGetCheckIfTheTokenIsValid(token, setLogoutUser)
     return () => {
       
     }
-  }, [getCheckIfTheTokenIsValid, token, setLogoutUser])
+  }, [userGetCheckIfTheTokenIsValid, token, setLogoutUser])
  
   return (
     <div className="w-full flex justify-center">

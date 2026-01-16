@@ -1,7 +1,11 @@
-import { useState } from "react";
+import {  useState } from "react";
 import useAuthStore from "../../stores/useAuthStore";
 import { SubmitHandler, useForm } from "react-hook-form";
-import {validarCPF, validarEmail, validarTelefone} from "../../utils/validacoes";
+import {
+  validarCPF,
+  validarEmail,
+  validarTelefone,
+} from "../../utils/validacoes";
 import { CreateUserType } from "../../types/authTypes";
 
 function FormLogin() {
@@ -13,7 +17,7 @@ function FormLogin() {
   } = useForm<CreateUserType>();
 
   const [signUp, setSignUp] = useState(false);
-  const { getAuthentication, getCreation } = useAuthStore();
+  const { userAuthentication, userCreation } = useAuthStore();
 
   const onSubmit: SubmitHandler<CreateUserType> = async (data) => {
     const loginData = signUp
@@ -32,15 +36,15 @@ function FormLogin() {
 
     try {
       const data = signUp
-        ? await getCreation(loginData)
-        : await getAuthentication(loginData);
+        ? await userCreation(loginData)
+        : await userAuthentication(loginData);
       return data;
     } catch (err) {
       console.error("Erro ao efetuar login/signUp", err);
     }
     return loginData;
   };
-  
+
   return (
     <div className="w-full h-screen flex justify-center items-center">
       <div className="w-[440px] text-sm mt-6">
@@ -72,7 +76,7 @@ function FormLogin() {
             }`}
             {...register("email", {
               required: "Email é obrigatório.",
-              pattern: {value:validarEmail, message: "Email inválido."},
+              pattern: { value: validarEmail, message: "Email inválido." },
             })}
           />
           {errors?.email && (

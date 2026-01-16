@@ -3,8 +3,8 @@ import ProdutoList from "./ProdutoList";
 import ProdutoForm from "./ProdutoForm";
 
 export type novoProdutoType = {
-  novoProduto: boolean;
   setNovoProduto: React.Dispatch<React.SetStateAction<boolean>>;
+  novoProduto: boolean;
 };
 function FormProduto() {
   const [novoProduto, setNovoProduto] = useState(false);
