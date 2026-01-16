@@ -6,12 +6,13 @@ import SearchSvg from "../../../assets/FormSvgs/SearchSvg";
 import DeleteSvg from "../../../assets/FormSvgs/DeleteSvg";
 import EditSvg from "../../../assets/FormSvgs/EditSvg";
 import { novoProdutoType } from "..";
+import { Link } from "react-router-dom";
 
 function ProdutoList({ novoProduto, setNovoProduto }: novoProdutoType) {
   const [isFocus, setIsFocus] = useState(true);
 
   const { usuarioId, token } = useAuthStore();
-  const { getProdutos, produtos } = useProdutoStore();
+  const { getProdutos, produtos, deleteProduto } = useProdutoStore();
 
   useEffect(() => {
     getProdutos(usuarioId, token);
@@ -78,22 +79,27 @@ function ProdutoList({ novoProduto, setNovoProduto }: novoProdutoType) {
                   {produtos.map((produto, index) => (
                     <tr key={index} className="flex justify-between py-3">
                       <td className="w-full h-12 px-4 flex items-center">
-                        {produto.title}
+                        {produto.nome}
                       </td>
                       <td className="w-full h-12 px-4 flex items-center font-light">
-                        {produto.precov}
+                        {produto.precoVenda}
                       </td>
                       <td className="w-full h-12 px-4 flex items-center font-light">
-                        {produto.precoc}
+                        {produto.precoCusto}
                       </td>
                       <td className="w-full h-12 px-4 flex items-center font-light">
                         {produto.estoque}
                       </td>
                       <td className="w-full h-12 px-4 flex items-center gap-3 font-light">
-                        <button>
-                          <EditSvg />
+                        <button
+                        className="cursor-pointer"
+                        
+                        >
+                          <Link to={`/produtos/${produto.id}`}><EditSvg /></Link>
                         </button>
-                        <button>
+                        <button
+                        className="cursor-pointer"
+                         onClick={() => deleteProduto(produto.id as string)}>
                           <DeleteSvg />
                         </button>
                       </td>

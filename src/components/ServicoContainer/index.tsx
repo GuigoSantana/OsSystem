@@ -1,19 +1,12 @@
-import useClienteStore from "../../stores/useClienteStore";
-import { useEffect, useState } from "react";
 import NewSvg from "../../assets/FormSvgs/NewSvg";
 import SearchSvg from "../../assets/FormSvgs/SearchSvg";
 import EditSvg from "../../assets/FormSvgs/EditSvg";
 import DeleteSvg from "../../assets/FormSvgs/DeleteSvg";
-import useAuthStore from "../../stores/useAuthStore";
+import { useState } from "react";
 
 function FormServico() {
   const [isFocus, setIsFocus] = useState(true);
-  const { getClientes, clientes } = useClienteStore();
-  const {token, usuarioId} = useAuthStore()
-  useEffect(() => {
-    getClientes(token, usuarioId);
-    console.log(usuarioId)
-  }, [getClientes, token, usuarioId]);
+  const servicos = ["serv1", "serv2"]
 
   return (
     <div className="w-full flex justify-center">
@@ -63,9 +56,9 @@ function FormServico() {
                   <th className="w-full h-12 px-4 flex items-center">Ações</th>
                 </tr>
               </thead>
-              {clientes ? (
+              {servicos ? (
                 <tbody className="flex flex-col">
-                  {clientes.map((cliente, index) => (
+                  {servicos.map((cliente, index) => (
                     <tr key={index} className="flex justify-between py-3">
                       <td className="w-full h-12 px-4 flex items-center">
                         {cliente.nome}

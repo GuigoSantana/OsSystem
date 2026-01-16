@@ -7,12 +7,13 @@ import { useEffect, useState } from "react";
 import useAuthStore from "../../../stores/useAuthStore";
 import useClienteStore from "../../../stores/useClienteStore";
 import { propsTypes } from "..";
+import { Link } from "react-router-dom";
 
 function ClienteList({ setNovoCliente, novoCliente }: propsTypes) {
   const [isFocus, setIsFocus] = useState(true);
 
   const { usuarioId } = useAuthStore();
-  const { getClientes, clientes } = useClienteStore();
+  const { getClientes, clientes, deleteCliente } = useClienteStore();
 
   useEffect(() => {
     getClientes(usuarioId);
@@ -88,10 +89,15 @@ function ClienteList({ setNovoCliente, novoCliente }: propsTypes) {
                         {trataData(cliente.createdAt)}
                       </td>
                       <td className="w-full h-12 px-4 flex items-center gap-3 font-light">
-                        <button>
-                          <EditSvg />
+                        <button className="cursor-pointer">
+                          <Link to={`/clientes/${cliente.id}`}>
+                            <EditSvg />
+                          </Link>
                         </button>
-                        <button>
+                        <button
+                          onClick={() => deleteCliente(cliente.id)}
+                          className="cursor-pointer"
+                        >
                           <DeleteSvg />
                         </button>
                       </td>
