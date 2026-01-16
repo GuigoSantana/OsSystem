@@ -1,4 +1,5 @@
-export type ClienteListType = {
+export type ClienteType = {
+  id: string;
   nome: string;
   email: string;
   cpf: string;
@@ -6,15 +7,9 @@ export type ClienteListType = {
   endereco: string;
   usuarioId: string;
   createdAt: string;
-  id?: string;
+  updatedAt: string;
 };
 
-export type ClienteFormType = {
-  nome: string;
-  email: string;
-  cpf: string;
-  telefone: string;
-  endereco: string;
-  usuarioId: string;
-  id?: string;
-};
+export type ClienteFormType = Omit<ClienteType, "usuarioId" | "id" | 'createdAt' | 'updatedAt' >;
+
+export type ClienteListType = Omit<ClienteType, | 'updateAt' | 'usuarioId' >;
