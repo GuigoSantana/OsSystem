@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import axios from "axios";
-import { apiUrl } from "../utils/variableUrl";
 import { ClienteType } from "../types/clientesTypes";
 
+const apiUrl = import.meta.env.VITE_API_URL
 type OrdemType = {
   cliente: ClienteType;
   createAt: string;
