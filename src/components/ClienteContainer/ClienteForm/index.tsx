@@ -5,7 +5,6 @@ import {
   validarEmail,
   validarTelefone,
 } from "../../../utils/validacoes";
-import useAuthStore from "../../../stores/useAuthStore";
 import useClienteStore from "../../../stores/useClienteStore";
 import useToastStore from "../../../stores/useToastStore";
 import Toast from "../../ToastComponent";
@@ -18,7 +17,6 @@ function ClienteForm({ setNovoCliente, novoCliente }: propsTypes) {
     formState: { errors },
   } = useForm<ClienteFormType>();
 
-  const { usuarioId } = useAuthStore();
   const { createCliente, isLoading } = useClienteStore();
   const { isOpen } = useToastStore();
 
@@ -29,9 +27,8 @@ function ClienteForm({ setNovoCliente, novoCliente }: propsTypes) {
       telefone: data?.telefone,
       endereco: data?.endereco,
       cpf: data?.cpf,
-      usuarioId,
     };
-    await createCliente(dataCliente);
+    createCliente(dataCliente);
   };
 
   return (
@@ -44,7 +41,6 @@ function ClienteForm({ setNovoCliente, novoCliente }: propsTypes) {
               Informe os dados do cliente e complete o cadastro.
             </p>
           </div>
-          <div></div>
           <button
             onClick={() => setNovoCliente(!novoCliente)}
             className="cursor-pointer flex items-center gap-2 py-2 px-3 h-9 rounded-sm text-sm font-semibold text-white bg-[#262E3F]"
@@ -65,7 +61,6 @@ function ClienteForm({ setNovoCliente, novoCliente }: propsTypes) {
                 <input
                   type="text"
                   id="nome"
-                  disabled={isLoading}
                   className={`p-[8px] rounded-lg border-1 border-gray-200 bg-white ${
                     errors.nome?.message ? "border-red-500" : ""
                   } ${isLoading ? "bg-gray-100 cursor-not-allowed" : ""}`}
@@ -74,7 +69,7 @@ function ClienteForm({ setNovoCliente, novoCliente }: propsTypes) {
                     minLength: {
                       value: 3,
                       message:
-                        "O nome do cliente deve ter pelomenos 3 caracteres.",
+                        "O nome do cliente deve ter pelomenos 3 letras.",
                     },
                   })}
                 />
