@@ -14,9 +14,8 @@ export const produtosService = {
     const res = await api.delete(`/produtos/${id}`);
     return res;
   },
-  updateProduto: async (id: string, data: ProdutoListType) => {
+  updateProduto: async (id: string, data: Partial<ProdutoListType>) => {
     const res = await api.put(`/produtos/${id}`, data);
-    console.log(res);
     return res;
   },
 };

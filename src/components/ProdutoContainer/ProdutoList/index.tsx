@@ -1,25 +1,76 @@
-import { useEffect, useState } from "react";
-import useAuthStore from "../../../stores/useAuthStore";
+import { useEffect, useMemo, useState } from "react";
 import useProdutoStore from "../../../stores/useProdutoStore";
+import useToastStore from "../../../stores/useToastStore";
 import NewSvg from "../../../assets/FormSvgs/NewSvg";
 import SearchSvg from "../../../assets/FormSvgs/SearchSvg";
 import DeleteSvg from "../../../assets/FormSvgs/DeleteSvg";
 import EditSvg from "../../../assets/FormSvgs/EditSvg";
 import { novoProdutoType } from "..";
 import { Link } from "react-router-dom";
+import { ProdutoListType } from "../../../types/produtosTypes";
+import ConfirmModal from "../../ConfirmModal";
+import Toast from "../../ToastComponent";
 
-function ProdutoList({ novoProduto, setNovoProduto }: novoProdutoType) {
-  const [isFocus, setIsFocus] = useState(true);
+function produtoCorrespondeBusca(
+  produto: ProdutoListType,
+  termo: string
+): boolean {
+  const termoTexto = termo.trim().toLowerCase();
+  if (!termoTexto) return true;
 
-  const { usuarioId, token } = useAuthStore();
-  const { getProdutos, produtos, deleteProduto } = useProdutoStore();
+  const nome = (produto.nome ?? "").toLowerCase();
+  if (nome.includes(termoTexto)) return true;
 
-  useEffect(() => {
-    getProdutos(usuarioId, token);
-  }, [getProdutos, usuarioId, token]);
+  const precoVenda = String(produto.precoVenda ?? "");
+  const precoCusto = String(produto.precoCusto ?? "");
+
+  if (
+    precoVenda.toLowerCase().includes(termoTexto) ||
+    precoCusto.toLowerCase().includes(termoTexto)
+  ) {
+    return true;
+  }
+
+  const termoNumerico = termo.replace(/[^\d.,]/g, "").replace(",", ".");
+  if (!termoNumerico) return false;
+
+  const vendaNormalizado = precoVenda.replace(",", ".");
+  const custoNormalizado = precoCusto.replace(",", ".");
 
   return (
-    <div className="w-full flex justify-center">
+    vendaNormalizado.includes(termoNumerico) ||
+    custoNormalizado.includes(termoNumerico)
+  );
+}
+
+function ProdutoList({ novoProduto, setNovoProduto }: novoProdutoType) {
+  const [isFocus, setIsFocus] = useState(false);
+  const [busca, setBusca] = useState("");
+  const [produtoParaExcluir, setProdutoParaExcluir] =
+    useState<ProdutoListType | null>(null);
+
+  const { getProdutos, produtos, deleteProduto, isLoading } = useProdutoStore();
+  const { isOpen } = useToastStore();
+
+  useEffect(() => {
+    getProdutos();
+  }, [getProdutos]);
+
+  const produtosFiltrados = useMemo(
+    () => produtos.filter((produto) => produtoCorrespondeBusca(produto, busca)),
+    [produtos, busca]
+  );
+
+  const handleConfirmarExclusao = async () => {
+    if (!produtoParaExcluir?.id) return;
+    const sucesso = await deleteProduto(produtoParaExcluir.id);
+    if (sucesso) {
+      setProdutoParaExcluir(null);
+    }
+  };
+
+  return (
+    <div className="w-full flex justify-center relative">
       <div className="w-full xl:w-[80%] flex flex-col item-center">
         <header className="flex flex-wrap justify-between w-full gap-4 px-8 py-8">
           <div>
@@ -49,9 +100,11 @@ function ProdutoList({ novoProduto, setNovoProduto }: novoProdutoType) {
               <input
                 className="w-full focus:outline-none focus:ring-0"
                 type="text"
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
                 onFocus={() => setIsFocus(true)}
                 onBlur={() => setIsFocus(false)}
-                placeholder=" Buscar Produtos..."
+                placeholder="Buscar por nome ou preço..."
               />
             </div>
           </div>
@@ -74,10 +127,10 @@ function ProdutoList({ novoProduto, setNovoProduto }: novoProdutoType) {
                   <th className="w-full h-12 px-4 flex items-center">Ações</th>
                 </tr>
               </thead>
-              {produtos ? (
+              {produtosFiltrados.length > 0 ? (
                 <tbody className="flex flex-col">
-                  {produtos.map((produto, index) => (
-                    <tr key={index} className="flex justify-between py-3">
+                  {produtosFiltrados.map((produto) => (
+                    <tr key={produto.id} className="flex justify-between py-3">
                       <td className="w-full h-12 px-4 flex items-center">
                         {produto.nome}
                       </td>
@@ -91,15 +144,16 @@ function ProdutoList({ novoProduto, setNovoProduto }: novoProdutoType) {
                         {produto.estoque}
                       </td>
                       <td className="w-full h-12 px-4 flex items-center gap-3 font-light">
-                        <button
-                        className="cursor-pointer"
-                        
-                        >
-                          <Link to={`/produtos/${produto.id}`}><EditSvg /></Link>
+                        <button type="button" className="cursor-pointer">
+                          <Link to={`/produtos/${produto.id}`}>
+                            <EditSvg />
+                          </Link>
                         </button>
                         <button
-                        className="cursor-pointer"
-                         onClick={() => deleteProduto(produto.id as string)}>
+                          type="button"
+                          onClick={() => setProdutoParaExcluir(produto)}
+                          className="cursor-pointer"
+                        >
                           <DeleteSvg />
                         </button>
                       </td>
@@ -107,14 +161,38 @@ function ProdutoList({ novoProduto, setNovoProduto }: novoProdutoType) {
                   ))}
                 </tbody>
               ) : (
-                <div className="w-full flex items-center justify-center py-10">
-                  <p>Nenhuma ordem de serviço encontrada</p>
-                </div>
+                <tbody>
+                  <tr>
+                    <td colSpan={5}>
+                      <div className="w-full flex items-center justify-center py-10">
+                        <p className="text-zinc-500">
+                          {produtos.length === 0
+                            ? "Nenhum produto cadastrado."
+                            : "Nenhum produto encontrado para esta busca."}
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
               )}
             </table>
           </div>
         </div>
       </div>
+      <ConfirmModal
+        isOpen={!!produtoParaExcluir}
+        title="Excluir produto"
+        message={
+          produtoParaExcluir
+            ? `Tem certeza que deseja excluir o produto "${produtoParaExcluir.nome}"? Esta ação não pode ser desfeita.`
+            : ""
+        }
+        confirmLabel="Excluir"
+        onConfirm={handleConfirmarExclusao}
+        onCancel={() => setProdutoParaExcluir(null)}
+        isLoading={isLoading}
+      />
+      {isOpen && <Toast />}
     </div>
   );
 }

@@ -8,9 +8,13 @@ type ProdutoStoreType = {
   produtos: ProdutoListType[];
   isLoading: boolean;
   setProdutos: (produtos: ProdutoListType[]) => void;
-  getProdutos: (usuarioId: string, token: string) => Promise<void>;
-  createProduto: (produto: ProdutoFormType) => void;
-  deleteProduto: (id: string) => void;
+  getProdutos: () => Promise<void>;
+  createProduto: (produto: ProdutoFormType) => Promise<boolean>;
+  updateProduto: (
+    id: string,
+    data: Partial<ProdutoListType>
+  ) => Promise<boolean>;
+  deleteProduto: (id: string) => Promise<boolean>;
 };
 
 const useProdutoStore = create<ProdutoStoreType>()(
@@ -29,7 +33,7 @@ const useProdutoStore = create<ProdutoStoreType>()(
           const res = await produtosService.getProdutos();
           set({ produtos: res.data, isLoading: false });
         } catch (err) {
-          console.error("Erro ao carregar clientes", err);
+          console.error("Erro ao carregar produtos", err);
         } finally {
           set({ isLoading: false });
         }
@@ -37,14 +41,35 @@ const useProdutoStore = create<ProdutoStoreType>()(
       createProduto: async (produto: ProdutoFormType) => {
         set({ isLoading: true });
         try {
-          const res = await produtosService.createProduto(produto);
-          console.log(res);
-          set({ isLoading: false });
+          await produtosService.createProduto(produto);
+          await useProdutoStore.getState().getProdutos();
           useToastStore.getState().addToast("Produto criado!", "sucesso");
+          return true;
         } catch (err) {
-          console.log(err);
-
+          console.error(err);
           useToastStore.getState().addToast("Produto não foi criado!", "erro");
+          return false;
+        } finally {
+          set({ isLoading: false });
+        }
+      },
+      updateProduto: async (id: string, data: Partial<ProdutoListType>) => {
+        set({ isLoading: true });
+        try {
+          await produtosService.updateProduto(id, data);
+          set((state) => ({
+            produtos: state.produtos.map((p) =>
+              p.id === id ? { ...p, ...data } : p
+            ),
+          }));
+          useToastStore.getState().addToast("Produto atualizado!", "sucesso");
+          return true;
+        } catch (err) {
+          console.error(err);
+          useToastStore
+            .getState()
+            .addToast("Produto não foi atualizado!", "erro");
+          return false;
         } finally {
           set({ isLoading: false });
         }
@@ -52,16 +77,18 @@ const useProdutoStore = create<ProdutoStoreType>()(
       deleteProduto: async (id: string) => {
         set({ isLoading: true });
         try {
-          const res = await produtosService.deleteProduto(id);
-          console.log(res);
-          useToastStore.getState().addToast("Produto deletado!", "sucesso");
-        } catch (err) {
-          console.log(err);
-        } finally {
+          await produtosService.deleteProduto(id);
           set((state) => ({
-            isLoading: false,
             produtos: state.produtos.filter((p) => p.id !== id),
           }));
+          useToastStore.getState().addToast("Produto deletado!", "sucesso");
+          return true;
+        } catch (err) {
+          console.error(err);
+          useToastStore.getState().addToast("Produto não foi deletado!", "erro");
+          return false;
+        } finally {
+          set({ isLoading: false });
         }
       },
     }),

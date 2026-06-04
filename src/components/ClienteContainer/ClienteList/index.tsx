@@ -3,21 +3,72 @@ import DeleteSvg from "../../../assets/FormSvgs/DeleteSvg";
 import { trataData } from "../../../utils/trataData";
 import NewSvg from "../../../assets/FormSvgs/NewSvg";
 import SearchSvg from "../../../assets/FormSvgs/SearchSvg";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useAuthStore from "../../../stores/useAuthStore";
 import useClienteStore from "../../../stores/useClienteStore";
+import useToastStore from "../../../stores/useToastStore";
 import { propsTypes } from "..";
 import { Link } from "react-router-dom";
+import { ClienteListType } from "../../../types/clientesTypes";
+import ConfirmModal from "../../ConfirmModal";
+import Toast from "../../ToastComponent";
+
+function clienteCorrespondeBusca(
+  cliente: ClienteListType,
+  termo: string
+): boolean {
+  const termoTexto = termo.trim().toLowerCase();
+  if (!termoTexto) return true;
+
+  const termoNumerico = termo.replace(/\D/g, "");
+  const campos = [cliente.nome, cliente.email, cliente.telefone, cliente.cpf];
+
+  if (
+    campos.some((campo) =>
+      (campo ?? "").toLowerCase().includes(termoTexto)
+    )
+  ) {
+    return true;
+  }
+
+  if (!termoNumerico) return false;
+
+  const cpfNumerico = (cliente.cpf ?? "").replace(/\D/g, "");
+  const telefoneNumerico = (cliente.telefone ?? "").replace(/\D/g, "");
+
+  return (
+    cpfNumerico.includes(termoNumerico) ||
+    telefoneNumerico.includes(termoNumerico)
+  );
+}
 
 function ClienteList({ setNovoCliente, novoCliente }: propsTypes) {
-  const [isFocus, setIsFocus] = useState(true);
+  const [isFocus, setIsFocus] = useState(false);
+  const [busca, setBusca] = useState("");
+  const [clienteParaExcluir, setClienteParaExcluir] =
+    useState<ClienteListType | null>(null);
 
   const { usuarioId } = useAuthStore();
-  const { getClientes, clientes, deleteCliente } = useClienteStore();
+  const { getClientes, clientes, deleteCliente, isLoading } = useClienteStore();
+  const { isOpen } = useToastStore();
+
+  const handleConfirmarExclusao = async () => {
+    if (!clienteParaExcluir) return;
+    const sucesso = await deleteCliente(clienteParaExcluir.id);
+    if (sucesso) {
+      setClienteParaExcluir(null);
+    }
+  };
 
   useEffect(() => {
     getClientes(usuarioId);
   }, [getClientes, usuarioId]);
+
+  const clientesFiltrados = useMemo(
+    () => clientes.filter((cliente) => clienteCorrespondeBusca(cliente, busca)),
+    [clientes, busca]
+  );
+
   return (
     <div className="w-full flex justify-center">
       <div className="w-full xl:w-[80%] flex flex-col item-center">
@@ -49,9 +100,11 @@ function ClienteList({ setNovoCliente, novoCliente }: propsTypes) {
               <input
                 className="w-full focus:outline-none focus:ring-0"
                 type="text"
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
                 onFocus={() => setIsFocus(true)}
                 onBlur={() => setIsFocus(false)}
-                placeholder=" Buscar clientes..."
+                placeholder="Buscar por nome, email, telefone ou CPF..."
               />
             </div>
           </div>
@@ -72,10 +125,10 @@ function ClienteList({ setNovoCliente, novoCliente }: propsTypes) {
                   <th className="w-full h-12 px-4 flex items-center">Ações</th>
                 </tr>
               </thead>
-              {clientes ? (
+              {clientesFiltrados.length > 0 ? (
                 <tbody className="flex flex-col">
-                  {clientes.map((cliente, index) => (
-                    <tr key={index} className="flex justify-between py-3">
+                  {clientesFiltrados.map((cliente) => (
+                    <tr key={cliente.id} className="flex justify-between py-3">
                       <td className="w-full h-12 px-4 flex items-center">
                         {cliente.nome}
                       </td>
@@ -95,7 +148,8 @@ function ClienteList({ setNovoCliente, novoCliente }: propsTypes) {
                           </Link>
                         </button>
                         <button
-                          onClick={() => deleteCliente(cliente.id)}
+                          type="button"
+                          onClick={() => setClienteParaExcluir(cliente)}
                           className="cursor-pointer"
                         >
                           <DeleteSvg />
@@ -105,14 +159,38 @@ function ClienteList({ setNovoCliente, novoCliente }: propsTypes) {
                   ))}
                 </tbody>
               ) : (
-                <div className="w-full flex items-center justify-center py-10">
-                  <p>Nenhuma ordem de serviço encontrada</p>
-                </div>
+                <tbody>
+                  <tr>
+                    <td colSpan={5}>
+                      <div className="w-full flex items-center justify-center py-10">
+                        <p className="text-zinc-500">
+                          {clientes.length === 0
+                            ? "Nenhum cliente cadastrado."
+                            : "Nenhum cliente encontrado para esta busca."}
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
               )}
             </table>
           </div>
         </div>
       </div>
+      <ConfirmModal
+        isOpen={!!clienteParaExcluir}
+        title="Excluir cliente"
+        message={
+          clienteParaExcluir
+            ? `Tem certeza que deseja excluir o cliente "${clienteParaExcluir.nome}"? Esta ação não pode ser desfeita.`
+            : ""
+        }
+        confirmLabel="Excluir"
+        onConfirm={handleConfirmarExclusao}
+        onCancel={() => setClienteParaExcluir(null)}
+        isLoading={isLoading}
+      />
+      {isOpen && <Toast />}
     </div>
   );
 }

@@ -11,7 +11,7 @@ export const clientesServices = {
     const res = await api.post<ClienteFormType>(`/clientes`, data);
     return res;
   },
-  updateCliente: async (id: string, data: ProdutoListType) => {
+  updateCliente: async (id: string, data: Partial<ClienteListType>) => {
     const res = await api.put(`/clientes/${id}`, data);
     return res;
   },

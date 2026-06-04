@@ -25,7 +25,17 @@ Para executar o projeto localmente na sua máquina, siga os passos abaixo:
 
    npm install
 
-3. Inicie o servidor de desenvolvimento
+3. Configure a URL da API
+
+   Copie o arquivo de exemplo e ajuste se necessário:
+
+   cp .env.example .env
+
+   O valor padrão aponta para o backend local no Docker:
+
+   VITE_API_URL=http://localhost:3333
+
+4. Inicie o servidor de desenvolvimento
 
    npm run dev
 

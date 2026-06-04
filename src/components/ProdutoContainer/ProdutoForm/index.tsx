@@ -24,10 +24,13 @@ function ProdutoForm({ novoProduto, setNovoProduto }: novoProdutoType) {
       precoCusto: data?.precoCusto,
       estoque: data?.estoque,
     };
-    createProduto(dataProduto);
+    const sucesso = await createProduto(dataProduto);
+    if (sucesso) {
+      setTimeout(() => setNovoProduto(false), 2000);
+    }
   };
   return (
-    <div className="w-full flex justify-center">
+    <div className="w-full flex justify-center relative">
       <div className="w-full xl:w-[80%] flex flex-col item-center">
         <header className="flex flex-wrap justify-between w-full gap-4 px-8 py-8">
           <div>
@@ -162,15 +165,19 @@ function ProdutoForm({ novoProduto, setNovoProduto }: novoProdutoType) {
                 {errors?.estoque && (
                   <p className="text-red-500">{errors.estoque?.message}</p>
                 )}
-                <button className="text-white font-semibold border border-zinc-200 rounded-md w-30 h-9 cursor-pointer bg-blue-500">
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="text-white font-semibold border border-zinc-200 rounded-md w-40 h-9 cursor-pointer bg-blue-500 disabled:opacity-60 disabled:cursor-not-allowed"
+                >
                   Cadastrar Produto
                 </button>
-                {isOpen && <Toast />}
               </form>
             </div>
           </div>
         </div>
       </div>
+      {isOpen && <Toast />}
     </div>
   );
 }

@@ -1,12 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { jwtDecode } from "jwt-decode";
 import { authServices } from "../services/authServices";
-import {
-  CreateUserType,
-  LoginUserType,
-  TokenPayload,
-} from "../types/authTypes";
+import { CreateUserType, LoginUserType } from "../types/authTypes";
 
 type AuthStoreType = {
   token: string;
@@ -15,10 +10,6 @@ type AuthStoreType = {
   setToken: (token: string) => void;
   userAuthentication: (data: LoginUserType) => Promise<void>;
   userCreation: (data: CreateUserType) => Promise<void>;
-  userGetCheckIfTheTokenIsValid: (
-    token: string,
-    logoutUserCallBack: () => void
-  ) => Promise<void>;
   setLogoutUser: () => void;
 };
 
@@ -58,28 +49,6 @@ const useAuthStore = create<AuthStoreType>()(
           console.log(error);
         } finally {
           set({ isLoading: false });
-        }
-      },
-      userGetCheckIfTheTokenIsValid: async (
-        token: string,
-        logoutUserCallBack: () => void
-      ) => {
-        try {
-          const decoded = jwtDecode<TokenPayload>(token);
-          const now = Date.now();
-          const expiration = decoded.exp * 1000;
-          const delay = expiration - now;
-          console.log(decoded.exp * 1000 - now);
-          if (delay <= 0) {
-            logoutUserCallBack();
-          } else {
-            setTimeout(() => {
-              logoutUserCallBack();
-            }, delay);
-          }
-        } catch (err) {
-          console.log("Erro ao decodificar token", err);
-          logoutUserCallBack();
         }
       },
       setLogoutUser: () => {

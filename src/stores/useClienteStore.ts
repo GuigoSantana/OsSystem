@@ -9,8 +9,12 @@ type ClienteStoreType = {
   isLoading: boolean;
   setClientes: (clientes: ClienteListType[]) => void;
   getClientes: (usuarioId: string) => Promise<void>;
-  createCliente: (data: ClienteFormType) => Promise<void>;
-  deleteCliente: (id: string) => Promise<void>;
+  createCliente: (data: ClienteFormType) => Promise<boolean>;
+  updateCliente: (
+    id: string,
+    data: Partial<ClienteListType>
+  ) => Promise<boolean>;
+  deleteCliente: (id: string) => Promise<boolean>;
 };
 
 const useClienteStore = create<ClienteStoreType>()(
@@ -40,13 +44,35 @@ const useClienteStore = create<ClienteStoreType>()(
       createCliente: async (data: ClienteFormType) => {
         set({ isLoading: true });
         try {
-          const res = await clientesServices.createCliente(data);
-          console.log(res);
-          set({ isLoading: false });
+          await clientesServices.createCliente(data);
+          await useClienteStore.getState().getClientes();
           useToastStore.getState().addToast("Cliente criado!", "sucesso");
+          return true;
         } catch (err) {
-          console.log(err);
+          console.error(err);
           useToastStore.getState().addToast("Cliente não foi criado!", "erro");
+          return false;
+        } finally {
+          set({ isLoading: false });
+        }
+      },
+      updateCliente: async (id: string, data: Partial<ClienteListType>) => {
+        set({ isLoading: true });
+        try {
+          await clientesServices.updateCliente(id, data);
+          set((state) => ({
+            clientes: state.clientes.map((c) =>
+              c.id === id ? { ...c, ...data } : c
+            ),
+          }));
+          useToastStore.getState().addToast("Cliente atualizado!", "sucesso");
+          return true;
+        } catch (err) {
+          console.error(err);
+          useToastStore
+            .getState()
+            .addToast("Cliente não foi atualizado!", "erro");
+          return false;
         } finally {
           set({ isLoading: false });
         }
@@ -54,16 +80,22 @@ const useClienteStore = create<ClienteStoreType>()(
       deleteCliente: async (id: string) => {
         set({ isLoading: true });
         try {
-          const res = await clientesServices.deleteCliente(id);
-          console.log(res);
-          set({ isLoading: false });
+          await clientesServices.deleteCliente(id);
+          set((state) => ({
+            clientes: state.clientes.filter((c) => c.id !== id),
+          }));
           useToastStore
             .getState()
             .addToast("Cliente deletado com sucesso!", "sucesso");
+          return true;
         } catch (error) {
-          console.log(error);
+          console.error(error);
+          useToastStore
+            .getState()
+            .addToast("Cliente não foi deletado!", "erro");
+          return false;
         } finally {
-          set((state) => ({ isLoading: false, clientes: state.clientes.filter(c => c.id !== id) }));
+          set({ isLoading: false });
         }
       },
     }),

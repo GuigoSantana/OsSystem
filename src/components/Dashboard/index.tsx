@@ -5,14 +5,12 @@ import ServicosSvg from "../../assets/DashboardSvgs/ServicosSvg";
 import OrdensSvg from "../../assets/DashboardSvgs/OrdensSvg";
 import style from "./styles";
 import Calendario from "./Calendario";
-import React, { useEffect } from "react";
+import React from "react";
 import CalendarioSvg from "../../assets/DashboardSvgs/CalendarioSvg";
 import { Range } from "react-date-range";
 import Valores from "./Valores";
-import useAuthStore from "../../stores/useAuthStore";
-function Dashboard() {
-  const {userGetCheckIfTheTokenIsValid, token, setLogoutUser} = useAuthStore()
 
+function Dashboard() {
   const [toggleCalendar, setToggleCalendar] = React.useState(false);
   const [stateCalendar, setStateCalendar] = React.useState<Range[]>([
     {
@@ -34,13 +32,6 @@ function Dashboard() {
   const formatedEndDate = formatter.format(stateCalendar[0].endDate);
 
 
-  useEffect(() => {
-    userGetCheckIfTheTokenIsValid(token, setLogoutUser)
-    return () => {
-      
-    }
-  }, [userGetCheckIfTheTokenIsValid, token, setLogoutUser])
- 
   return (
     <div className="w-full flex justify-center">
       <div className="w-full xl:w-[80%]  px-8 py-8 flex flex-col ">

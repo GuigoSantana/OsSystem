@@ -28,7 +28,10 @@ function ClienteForm({ setNovoCliente, novoCliente }: propsTypes) {
       endereco: data?.endereco,
       cpf: data?.cpf,
     };
-    createCliente(dataCliente);
+    const sucesso = await createCliente(dataCliente);
+    if (sucesso) {
+      setTimeout(() => setNovoCliente(false), 2000);
+    }
   };
 
   return (
@@ -162,12 +165,12 @@ function ClienteForm({ setNovoCliente, novoCliente }: propsTypes) {
                 >
                   Criar Cliente
                 </button>
-                {isOpen && <Toast />}
               </form>
             </div>
           </div>
         </div>
       </div>
+      {isOpen && <Toast />}
     </div>
   );
 }
