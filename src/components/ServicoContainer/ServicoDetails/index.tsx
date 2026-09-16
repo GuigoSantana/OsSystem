@@ -30,11 +30,12 @@ function ServicoDetails() {
   }
 
   const onSubmit: SubmitHandler<ServicoListType> = async (data) => {
-    const alteracoes = Object.keys(dirtyFields).reduce((acc, key) => {
-      const field = key as keyof ServicoListType;
-      acc[field] = data[field] as ServicoListType[keyof ServicoListType];
-      return acc;
-    }, {} as Partial<ServicoListType>);
+    const alteracoes: Partial<Pick<ServicoListType, "nome" | "descricao" | "preco">> =
+      {};
+
+    if (dirtyFields.nome) alteracoes.nome = data.nome;
+    if (dirtyFields.descricao) alteracoes.descricao = data.descricao;
+    if (dirtyFields.preco) alteracoes.preco = data.preco;
 
     if (Object.keys(alteracoes).length === 0) {
       return;
