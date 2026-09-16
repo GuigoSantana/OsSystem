@@ -4,7 +4,6 @@ import { trataData } from "../../../utils/trataData";
 import NewSvg from "../../../assets/FormSvgs/NewSvg";
 import SearchSvg from "../../../assets/FormSvgs/SearchSvg";
 import { useEffect, useMemo, useState } from "react";
-import useAuthStore from "../../../stores/useAuthStore";
 import useClienteStore from "../../../stores/useClienteStore";
 import useToastStore from "../../../stores/useToastStore";
 import { propsTypes } from "..";
@@ -48,7 +47,6 @@ function ClienteList({ setNovoCliente, novoCliente }: propsTypes) {
   const [clienteParaExcluir, setClienteParaExcluir] =
     useState<ClienteListType | null>(null);
 
-  const { usuarioId } = useAuthStore();
   const { getClientes, clientes, deleteCliente, isLoading } = useClienteStore();
   const { isOpen } = useToastStore();
 
@@ -61,8 +59,8 @@ function ClienteList({ setNovoCliente, novoCliente }: propsTypes) {
   };
 
   useEffect(() => {
-    getClientes(usuarioId);
-  }, [getClientes, usuarioId]);
+    getClientes();
+  }, [getClientes]);
 
   const clientesFiltrados = useMemo(
     () => clientes.filter((cliente) => clienteCorrespondeBusca(cliente, busca)),

@@ -8,7 +8,7 @@ type ClienteStoreType = {
   clientes: ClienteListType[];
   isLoading: boolean;
   setClientes: (clientes: ClienteListType[]) => void;
-  getClientes: (usuarioId: string) => Promise<void>;
+  getClientes: () => Promise<void>;
   createCliente: (data: ClienteFormType) => Promise<boolean>;
   updateCliente: (
     id: string,

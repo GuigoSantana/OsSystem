@@ -23,11 +23,18 @@ function ProdutoDetails() {
   }
 
   const onSubmit: SubmitHandler<ProdutoListType> = async (data) => {
-    const alteracoes = Object.keys(dirtyFields).reduce((acc, key) => {
-      const field = key as keyof ProdutoListType;
-      acc[field] = data[field] as ProdutoListType[keyof ProdutoListType];
-      return acc;
-    }, {} as Partial<ProdutoListType>);
+    const alteracoes: Partial<
+      Pick<
+        ProdutoListType,
+        "nome" | "descricao" | "precoVenda" | "precoCusto" | "estoque"
+      >
+    > = {};
+
+    if (dirtyFields.nome) alteracoes.nome = data.nome;
+    if (dirtyFields.descricao) alteracoes.descricao = data.descricao;
+    if (dirtyFields.precoVenda) alteracoes.precoVenda = data.precoVenda;
+    if (dirtyFields.precoCusto) alteracoes.precoCusto = data.precoCusto;
+    if (dirtyFields.estoque) alteracoes.estoque = data.estoque;
 
     if (Object.keys(alteracoes).length === 0) {
       return;

@@ -1,5 +1,4 @@
 import { ClienteFormType, ClienteListType } from "../types/clientesTypes";
-import { ProdutoListType } from "../types/produtosTypes";
 import api from "./api";
 
 export const clientesServices = {
